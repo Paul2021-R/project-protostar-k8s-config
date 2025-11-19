@@ -19,7 +19,7 @@ spec: # desired state 를 정의
   source:
     repoURL: https://github.com/zalando/postgres-operator.git
     targetRevision: v1.15.0
-    chart: charts/postgres-operator
+    path: charts/postgres-operator
 
     # 4 Chart Value Settings
     helm:
