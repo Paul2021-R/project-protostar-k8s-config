@@ -14,19 +14,19 @@ spec:
 
   source:
     repoURL: https://github.com/Paul2021-R/project-protostar-k8s-config.git
-    targetRevision: HEAD # HEAD 를 사용하면 항상 최신 버전을 사용한다. Jenkins 의 CI 절차로 최신화
+    # targetRevision: HEAD # HEAD 를 사용하면 항상 최신 버전을 사용한다. Jenkins 의 CI 절차로 최신화
+    targetRevision: main
     path: infrastructure/postgres/crds
 
-  plugin:
-    name: kustomize # k8s 의 YAML 설정 파일을 관리 및 변경하는 역할의 도구 
-    # 왜 쓰는가?
-      # 환경별 설정 분리 
-      # 이미지 태그 자동 변경
-      # 비밀번호 / 설정 관리 등
+    # plugin:
+    #   name: kustomize # k8s 의 YAML 설정 파일을 관리 및 변경하는 역할의 도구 
+    #   # 왜 쓰는가?
+    #     # 환경별 설정 분리 
+    #     # 이미지 태그 자동 변경
+    #     # 비밀번호 / 설정 관리 등
+    # 안쓰는 걸로 정리. 
 
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-    dependsOn:
-      -name: postgres-operator
