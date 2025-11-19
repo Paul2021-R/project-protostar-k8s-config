@@ -18,7 +18,7 @@ spec:
     protostar_db: protostar_user
 
   # 3 Docker 이미지 버전
-  dockerImage: ghcr.io/zalando/spilo-16:3.0-p1
+  dockerImage: registry.opensource.zalan.do/acid/spilo-pg16:3.0-p1
   postgresql:
     version: "16"
 
