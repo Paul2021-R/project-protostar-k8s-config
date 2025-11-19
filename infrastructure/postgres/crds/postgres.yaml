@@ -27,7 +27,7 @@ spec:
       protostar_db:
         defaultUsers: true
         extensions:
-          vector: {}  # 여기서 이렇게 선언하면 "CREATE EXTENSION vector;"를 수행합니다.
+          vector: "public"
         schemas:
           public: {}
   # 5 연결 풀링 활성화(MSA 환경 최적화)
