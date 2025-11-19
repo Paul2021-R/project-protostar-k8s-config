@@ -18,9 +18,9 @@ spec:
     protostar_db: protostar_user
 
   # 3 Docker 이미지 버전
-  dockerImage: registry.opensource.zalan.do/acid/spilo-pg16:3.0-p1
+  dockerImage: ghcr.io/zalando/spilo-17:4.0-p3
   postgresql:
-    version: "16"
+    version: "17"
 
   # 4 RAG를 위한 pgvector 확장 활성화
   # 순정 이미지라 없나?
