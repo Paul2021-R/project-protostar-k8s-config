@@ -17,9 +17,9 @@ spec: # desired state 를 정의
 
   # 3 Source Settings
   source:
-    repoURL: https://opensource.zalando.net/postgres-operator/charts/postgres-operator/
-    targetRevision: 1.15.0
-    chart: postgres-operator
+    repoURL: https://github.com/zalando/postgres-operator.git
+    targetRevision: v1.15.0
+    chart: charts/postgres-operator
 
     # 4 Chart Value Settings
     helm:
