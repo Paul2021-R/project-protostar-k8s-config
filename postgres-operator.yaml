@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  # ArgoCD metadata
+  name: postgres-operator
+  namespace: argocd # 물리적인 클러스터를 여러개의 독립적인 작업 공간을 나누기 위한 구분자 
+  finalizers: # 리소스 삭제를 위한 정리작업 수행 대상(관리 대상)을 지정함
+    - resources-finalizer.argocd.argoproj.io # 결국 어떤 리소스를 관리하고 정리할지 대상을 정해줄 수 있다. 즉, 커스텀 finializer 기반으로 원하는 방식을 만들 수도 있다. (백업이나 비상 시 대응 등)
+spec: # desired state 를 정의
+  # 1 Default settings
+  project: default
+  
+  # 2 Target Cluster settings 최종적 리소스 배포될 Kubernetes 클러스터 정의
+  destination: 
+    server: https://kubernetes.default.svc
+    namepsace: postgres-operator
+
+  # 3 Source Settings
+  source:
+    repoURL: https://charts.zalando.net/
+    targetRevision: 1.15.0
+    chart: postgres-operator
+
+  # 4 Chart Value Settings
+  helm:
+    values:
+      createClusterNameSpace: true
+      rbac: # RBAC - 리소스 접근을 사용자 역할 기반 권한 부여 시스템이다
+        create: true # 기본 설정으로 Operator 가 클러스터에 배포 되면서, 기본  RBAC 리소스를 자동 설정해준다 false 설정시 자동 생성 중단됨
+          # 해당 설정시 아래의 3가지 리소스가 자동 생성 
+            # ServiceAcount : 신분증
+            # ClusterRole : 권한 영역
+            # ClusterRoleBinding : 연결
+        # RBAC 의 핵심 구성요소 
+        # Role : 권한 정의
+        # RoleBinding : 권한 할당
+        # ClusterRole : 클러스터 전체에 대한 권한 정의
+        # ClusterRoleBinding : 클러스터 전체에 대한 권한 할당
+  
+  # 5 Sync Policy (GitOps Point) - GitOps로 지정된 원칙 기반으로 상황을 Git 과 일정하게 유지하는 정책 설정
+  syncPolicy:
+    automated:
+      prune: true # Git 에 없는 리소스는 클러스터에서 제거
+      selfHeal: true # 클러스터 상태가 Git 과 다르면 자동 복구 시도
+    syncOptions:
+      - CreateNamespace=true
