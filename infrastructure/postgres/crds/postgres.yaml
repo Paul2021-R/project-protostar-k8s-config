@@ -23,14 +23,13 @@ spec:
     version: "17"
 
   # 4 RAG를 위한 pgvector 확장 활성화
-  # 순정 이미지라 없나?
-  # preparedDatabases:
-  #     protostar_db:
-  #       defaultUsers: true
-  #       extensions:
-  #         vector: "public"
-  #       schemas:
-  #         public: {}
+  preparedDatabases:
+      protostar_db:
+        defaultUsers: true
+        extensions:
+          vector: "public"
+        schemas:
+          public: {}
   # 5 연결 풀링 활성화(MSA 환경 최적화)
   enableConnectionPooler: true # PgBouncer 자동 배포 및 관리 활성화
   # 기본적으로 PostgreSQL 은 연결 당 프로세스 1개로 설정됨 
