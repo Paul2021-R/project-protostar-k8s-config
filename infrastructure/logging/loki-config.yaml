@@ -1,0 +1,42 @@
+# infrastructure/logging/loki-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logging-loki-config
+  namespace: logging
+data:
+  loki.yaml: |
+    auth_enabled: false
+    server:
+      http_listen_port: 3100
+      grpc_listen_port: 9095
+
+    # 단일 노드(Monolithic) 환경을 위한 설정
+    common:
+      path_prefix: /loki
+      replication_factor: 1
+      ring:
+        instance_addr: 127.0.0.1
+        kvstore:
+          store: inmemory
+
+    # [필수] 저장소 스키마 정의 (설치 오류 해결)
+    schema_config:
+      configs:
+        - from: 2020-10-25
+          store: boltdb-shipper
+          object_store: filesystem
+          schema: v11
+          index:
+            prefix: index_
+            period: 24h
+
+    # [필수] 파일 시스템 기반 저장소 경로 설정
+    storage_config:
+      boltdb_shipper:
+        active_index_directory: /data/loki/index
+        cache_location: /data/loki/cache
+        cache_ttl: 24h
+        shared_store: filesystem
+      filesystem:
+        directory: /data/loki/chunks

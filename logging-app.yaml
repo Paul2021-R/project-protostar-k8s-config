@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: loki
+  name: logging
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -9,16 +9,23 @@ spec:
   project: default
   destination:
     server: https://kubernetes.default.svc
-    namespace: loki
+    namespace: logging
   
+  # 이 네임스페이스에 ClusterRole/ClusterRoleBinding 리소스도 포함되므로 주의합니다.
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-
-  sources:
-    - repoURL: https://github.com/grafana/loki
-      path: production/kube
-      targetRevision: v3.5.0
+      - ServerSideApply=true
+      - RespectIgnoreDifferences=true # RBAC 관련 변경사항 무시
+      
+  source:
+    repoURL: https://github.com/Paul2021-R/project-protostar-k8s-config.git
+    targetRevision: main
+    # 3개의 파일을 모두 포함하는 폴더 경로를 지정
+    directory:
+      recurse: true
+      jsonnet: {} # JSONNet 템플릿 처리기 비활성화 (순수 YAML만 사용)
+    path: infrastructure/logging

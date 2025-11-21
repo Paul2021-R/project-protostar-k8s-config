@@ -1,0 +1,77 @@
+# infrastructure/logging/loki-deployment.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: logging-loki # Promtail이 사용할 내부 서비스 이름
+  namespace: logging
+  labels:
+    app: loki
+spec:
+  type: NodePort
+  ports:
+    - name: http-metrics
+      port: 3100
+      targetPort: 3100
+      nodePort: 30100 # 외부 노출 포트
+  selector:
+    app: loki
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: logging-loki
+  namespace: logging
+  labels:
+    app: loki
+spec:
+  serviceName: "logging-loki"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loki
+  template:
+    metadata:
+      labels:
+        app: loki
+    spec:
+      terminationGracePeriodSeconds: 15
+      volumes:
+        - name: config
+          configMap:
+            name: logging-loki-config # 1단계에서 만든 ConfigMap 마운트
+      containers:
+        - name: loki
+          image: grafana/loki:3.6.0 # [순정 버전] 최신 Loki 이미지
+          args:
+            - "-config.file=/etc/loki/loki.yaml"
+          ports:
+            - name: http-metrics
+              containerPort: 3100
+            - name: grpc
+              containerPort: 9095
+          volumeMounts:
+            - name: config
+              mountPath: /etc/loki
+            - name: storage
+              mountPath: /data/loki
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 45
+            timeoutSeconds: 1
+  volumeClaimTemplates:
+    - metadata:
+        name: storage
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: microk8s-hostpath # MicroK8s의 기본 스토리지 사용
+        resources:
+          requests:
+            storage: 10Gi

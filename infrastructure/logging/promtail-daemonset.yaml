@@ -1,0 +1,118 @@
+# infrastructure/logging/promtail-daemonset.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: logging-promtail
+  namespace: logging
+  labels:
+    app: promtail
+spec:
+  selector:
+    matchLabels:
+      app: promtail
+  template:
+    metadata:
+      labels:
+        app: promtail
+    spec:
+      serviceAccountName: logging-promtail # Promtail이 로그 파일을 읽기 위한 권한
+      containers:
+        - name: promtail
+          image: grafana/promtail:3.6.0 # Loki 버전과 맞춤
+          args:
+            - "-config.file=/etc/promtail/promtail.yaml"
+          ports:
+            - containerPort: 3101
+              name: http-metrics
+          volumeMounts:
+            - name: varlog
+              mountPath: /var/log
+            - name: varlibdockercontainers
+              mountPath: /var/lib/docker/containers
+              readOnly: true
+            - name: config
+              mountPath: /etc/promtail
+          # 보안 강화를 위해 호스트 네트워크 사용 (선택 사항)
+          hostNetwork: true
+      volumes:
+        - name: varlog
+          hostPath:
+            path: /var/log
+        - name: varlibdockercontainers
+          hostPath:
+            path: /var/lib/docker/containers
+        - name: config
+          configMap:
+            name: logging-promtail-config
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: logging-promtail
+  namespace: logging
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: logging-promtail
+rules:
+  - apiGroups: [""]
+    resources: ["nodes", "services", "endpoints", "pods"]
+    verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: logging-promtail
+subjects:
+  - kind: ServiceAccount
+    name: logging-promtail
+    namespace: logging
+roleRef:
+  kind: ClusterRole
+  name: logging-promtail
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logging-promtail-config # Promtail 설정 파일 ConfigMap
+  namespace: logging
+data:
+  promtail.yaml: |
+    server:
+      http_listen_port: 3101
+      grpc_listen_port: 9096
+      
+    positions:
+      filename: /tmp/positions.yaml
+      
+    clients:
+      # [핵심] Loki 서버의 내부 주소로 로그 전송
+      - url: http://logging-loki:3100/loki/api/v1/push
+        
+    scrape_configs:
+      - job_name: kubernetes-pods
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: ['__name__']
+            target_label: __service__
+            action: replace
+          - source_labels: ['__meta_kubernetes_pod_label_app']
+            target_label: app
+            action: replace
+          - source_labels: ['__meta_kubernetes_pod_uid']
+            target_label: __tmp_pod_uid
+            action: replace
+          - source_labels: ['__meta_kubernetes_pod_container_name']
+            target_label: container
+            action: replace
+          - source_labels: ['__meta_kubernetes_namespace']
+            target_label: namespace
+            action: replace
+          - source_labels: ['__tmp_pod_uid', '__meta_kubernetes_pod_container_name']
+            regex: '([^/]+)/(.+)'
+            target_label: __path__
+            replacement: /var/log/pods/$1/$2/*.log
+            action: replace
