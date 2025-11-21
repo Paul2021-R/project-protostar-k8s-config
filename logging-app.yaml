@@ -22,7 +22,7 @@ spec:
   source:
     repoURL: https://grafana.github.io/helm-charts
     chart: loki
-    targetRevision: 6.x.x
+    targetRevision: 6.46.0
     
     helm:
       values: |
@@ -30,11 +30,6 @@ spec:
 
         loki:
           auth_enabled: false
-          storage:
-            bucketNames:
-              chunks: loki-chunks
-              ruler: loki-ruler
-            type: filesystem
 
         singleBinary:
           replicas: 1
@@ -48,8 +43,3 @@ spec:
           service:
             type: NodePort
             nodePort: 30100
-            port: 80
-            targetPort: 8080
-
-        minio:
-          enabled: false
