@@ -1,80 +1,143 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
+---
+apiVersion: v1
+kind: Namespace
 metadata:
-  name: logging
-  namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
+  name: loki
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: loki-pvc
+  namespace: loki
 spec:
-  project: default
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: logging
-  
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-      - ServerSideApply=true # CRD 충돌 방지
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
 
-  source:
-    repoURL: https://grafana.github.io/helm-charts
-    chart: loki
-    targetRevision: 6.x.x 
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loki-config
+  namespace: loki
+data:
+  loki-config.yaml: |
+    auth_enabled: false
     
-    helm:
-      values: |
-        loki:
-          # 1. [순정 버전] Loki 이미지 버전을 3.6.0으로 강제 지정
-          image:
-            tag: 3.6.0
-            
-          auth_enabled: false
-          
-          # 2. [순정 모드] 단일 파드(Monolithic) 모드 사용
-          deploymentMode: Monolithic
-          replicas: 1
+    ingester:
+      chunk_idle_period: 3m
+      max_chunk_age: 6h
+      chunk_retain_period: 1m
+      max_streams_per_user: 10000
+    
+    limits_config:
+      enforce_metric_name: false
+      reject_old_samples: true
+      reject_old_samples_max_age: 168h
+      retention_period: 24h
+    
+    schema_config:
+      configs:
+        - from: 2020-10-24
+          store: boltdb-shipper
+          object_store: filesystem
+          schema: v11
+          index:
+            prefix: index_
+            period: 24h
+    
+    server:
+      http_listen_port: 3100
+      log_level: info
+    
+    storage_config:
+      boltdb_shipper:
+        active_index_directory: /loki/boltdb-shipper-active
+        cache_location: /loki/boltdb-shipper-cache
+        shared_store: filesystem
+      filesystem:
+        directory: /loki/chunks
+    
+    chunk_store_config:
+      max_look_back_period: 0s
 
-          # 3. [순정 설정] Monolithic 파드에 필요한 PVC 설정 (최상위 레벨)
-          persistence:
-            enabled: true
-            storageClassName: microk8s-hostpath 
-            size: 10Gi
-            
-          # 4. [오류 해결] 분산 컴포넌트 복제본을 0으로 강제하여 유효성 검사 통과
-          backend:
-            replicas: 0
-          read:
-            replicas: 0
-          write:
-            replicas: 0
-            
-          # 5. [필수 설정] 저장소 타입과 스키마 정의 (최신 차트 필수 요구 사항)
-          storage:
-            type: filesystem
-            bucketNames:
-              chunks: loki-data-chunks
-              ruler: loki-data-ruler
-              admin: loki-data-admin
-          
-          schemaConfig:
-            configs:
-              - from: 2020-10-25
-                store: boltdb-shipper
-                object_store: filesystem
-                schema: v11
-                index:
-                  prefix: index_
-                  period: 24h
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loki
+  namespace: loki
+  labels:
+    app: loki
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loki
+  template:
+    metadata:
+      labels:
+        app: loki
+    spec:
+      containers:
+      - name: loki
+        image: grafana/loki:2.9.1
+        ports:
+        - name: http
+          containerPort: 3100
+          protocol: TCP
+        args:
+          - -config.file=/etc/loki/loki-config.yaml
+        volumeMounts:
+        - name: config
+          mountPath: /etc/loki
+        - name: storage
+          mountPath: /loki
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            path: /ready
+            port: 3100
+          initialDelaySeconds: 45
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3100
+          initialDelaySeconds: 45
+          periodSeconds: 10
+      volumes:
+      - name: config
+        configMap:
+          name: loki-config
+      - name: storage
+        persistentVolumeClaim:
+          claimName: loki-pvc
 
-        promtail:
-          enabled: true
-          config:
-            clients:
-              - url: http://logging-loki:3100/loki/api/v1/push
-            
-        service:
-          type: NodePort
-          nodePort: 30100
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: loki
+  namespace: loki
+  labels:
+    app: loki
+spec:
+  type: NodePort
+  selector:
+    app: loki
+  ports:
+  - name: http
+    protocol: TCP
+    port: 3100
+    targetPort: 3100
+    nodePort: 30100
