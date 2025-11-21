@@ -1,0 +1,48 @@
+# argoCD 기반으로 구축하기 위한 그룹 / appi 버전
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: rabbitmq
+  namespace: argocd
+  finalizers: 
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  destination: 
+    server: https://kubernetes.default.svc
+    namespace: default
+
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    chart: rabbitmq
+    targetRevision: 16.x.x
+
+    helm:
+      values: |
+        # 1 인증 정보 설정 (초기 작업용 고정값)
+        auth: 
+          username: user
+          password: protostar_pass
+          erlangCookie4: "secret_cookie_protostar"
+
+        # 2 리소스 절약을 위해 1개만 띄우기
+        replicaCount: 1
+
+        # 3 데이터 보존을 위한 스토리지 설정
+        persistence:
+          enabled: true
+          size: 8Gi
+
+        # 4 내부 통신 설정 (외부 제외)
+        service:
+          type: ClusterIP
+        
+        # 5 관리 콘솔 플러그인 활성화
+        extraPlugins: "rabbitmq_management rabbitmq_peer_discovery_k8s"
+
+  syncPolicy:
+    automated: 
+      prune: true
+      selfHeal: true
+    syncOptions: 
+      - CreateNamespace=true
