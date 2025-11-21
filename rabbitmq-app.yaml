@@ -15,7 +15,7 @@ spec:
   source:
     repoURL: https://charts.bitnami.com/bitnami
     chart: rabbitmq
-    targetRevision: 16.x.x
+    targetRevision: 15.x.x
 
     helm:
       values: |
@@ -23,7 +23,7 @@ spec:
         auth: 
           username: user
           password: protostar_pass
-          erlangCookie4: "secret_cookie_protostar"
+          erlangCookie: "secret_cookie_protostar"
 
         # 2 리소스 절약을 위해 1개만 띄우기
         replicaCount: 1
