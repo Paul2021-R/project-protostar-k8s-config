@@ -26,9 +26,7 @@ spec:
     helm:
       values: |
         # 1. Node Exporter 포트 변경 (9101)
-        nodeExporter:
-          enabled: true
-
+        prometheus-node-exporter:
           extraArgs:
             - --web.listen-address=:9101
 
