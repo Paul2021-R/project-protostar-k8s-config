@@ -17,27 +17,32 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - ServerSideApply=true # CRD 충돌 방지
 
   source:
     repoURL: https://grafana.github.io/helm-charts
-    chart: loki-stack
-    targetRevision: 2.10.x 
+    # [핵심 수정] 구형 'loki-stack' 대신 최신 'loki' 차트 사용
+    chart: loki
+    targetRevision: 6.x.x 
     
     helm:
       values: |
+        # 1. Loki 기본 설정
         loki:
-          enabled: true
-          persistence:
-            enabled: true
-            size: 10Gi
-          service:
-            type: NodePort
-            nodePort: 30100
-          config:
-            auth_enabled: false
-        
+          # 인증 모드를 끄면 Grafana에서 헤더 설정 불필요
+          auth_enabled: false
+          
+          # [수정] monolithic 모드로 단일 인스턴스 사용 (리소스 절약 및 설치 단순화)
+          deploymentMode: Monolithic
+
+        # 2. Promtail 설정
         promtail:
           enabled: true
+          # Promtail이 Loki를 찾을 주소 (Service 이름은 'logging-loki'가 됩니다)
           config:
-            clients:
-              - url: http://logging-loki:3100/loki/api/v1/push
+            lokiAddress: http://logging-loki:3100/loki/api/v1/push
+            
+        # 3. K8s 서비스 노출
+        service:
+          type: NodePort
+          nodePort: 30100
