@@ -27,33 +27,38 @@ spec:
     helm:
       values: |
         loki:
+          # 1. [순정 버전] Loki 이미지 버전을 3.6.0으로 강제 지정
           image:
             tag: 3.6.0
             
           auth_enabled: false
           
-          # [핵심] Monolithic 모드를 SingleBinary로 강제 지정
-          deploymentMode: SingleBinary
+          # 2. [순정 모드] 단일 파드(Monolithic) 모드 사용
+          deploymentMode: Monolithic
+          replicas: 1
 
-          # [수정] Monolithic 모드(SingleBinary)에 필요한 설정을 명시
-          singleBinary:
-            replicas: 1
-            persistence:
-              enabled: true
-              # MicroK8s에서 활성화한 기본 StorageClass 사용
-              storageClassName: microk8s-hostpath 
-              size: 10Gi
-
-          # [저장소 설정] Loki 코드가 Filesystem을 사용하도록 명시
+          # 3. [순정 설정] Monolithic 파드에 필요한 PVC 설정 (최상위 레벨)
+          persistence:
+            enabled: true
+            storageClassName: microk8s-hostpath 
+            size: 10Gi
+            
+          # 4. [오류 해결] 분산 컴포넌트 복제본을 0으로 강제하여 유효성 검사 통과
+          backend:
+            replicas: 0
+          read:
+            replicas: 0
+          write:
+            replicas: 0
+            
+          # 5. [필수 설정] 저장소 타입과 스키마 정의 (최신 차트 필수 요구 사항)
           storage:
             type: filesystem
-            filesystem: {}
             bucketNames:
               chunks: loki-data-chunks
               ruler: loki-data-ruler
               admin: loki-data-admin
-            
-          # 스키마 설정 (유지)
+          
           schemaConfig:
             configs:
               - from: 2020-10-25
@@ -67,7 +72,8 @@ spec:
         promtail:
           enabled: true
           config:
-            lokiAddress: http://logging-loki:3100/loki/api/v1/push
+            clients:
+              - url: http://logging-loki:3100/loki/api/v1/push
             
         service:
           type: NodePort
