@@ -17,6 +17,7 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - ServerSideApply=true # ArgoCD 에서 말고, ServerSide에서 알아서 처리하도록 설정 CRD Too long 뜸
 
   source:
     repoURL: https://prometheus-community.github.io/helm-charts
@@ -26,9 +27,9 @@ spec:
     helm:
       values: |
         # 1. Node Exporter 포트 변경
-        prometheus-node-exporter:
-
-          service:
+        # Node exporter는 Prometheus 라는 선행사가 있는 옵션이었음. Service 에서 port 설정만 바꿔줘도 되는 거였음.
+        prometheus-node-exporter: 
+          service: 
             port: 9200
             targetPort: 9200
 
