@@ -32,10 +32,19 @@ spec:
             
           auth_enabled: false
           
-          # [핵심 수정] Filesystem 스토리지를 사용하고, Monolithic 모드를 강제합니다.
+          # [핵심] Monolithic 모드를 SingleBinary로 강제 지정
           deploymentMode: SingleBinary
-          
-          # [저장소 설정] PV/PVC를 사용하는 Filesystem으로 명시합니다.
+
+          # [수정] Monolithic 모드(SingleBinary)에 필요한 설정을 명시
+          singleBinary:
+            replicas: 1
+            persistence:
+              enabled: true
+              # MicroK8s에서 활성화한 기본 StorageClass 사용
+              storageClassName: microk8s-hostpath 
+              size: 10Gi
+
+          # [저장소 설정] Loki 코드가 Filesystem을 사용하도록 명시
           storage:
             type: filesystem
             filesystem: {}
@@ -44,14 +53,6 @@ spec:
               ruler: loki-data-ruler
               admin: loki-data-admin
             
-          # 분산 모드 컴포넌트 비활성화 (오작동 방지)
-          backend:
-            enabled: false
-          read:
-            enabled: false
-          write:
-            enabled: false
-          
           # 스키마 설정 (유지)
           schemaConfig:
             configs:
