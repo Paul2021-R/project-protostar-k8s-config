@@ -1,4 +1,3 @@
-# logging-app.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -31,12 +30,13 @@ spec:
           persistence:
             enabled: true
             size: 10Gi
-          # [핵심] 외부(Centre Grafana)에서 접속하도록 NodePort 개방
           service:
             type: NodePort
             nodePort: 30100
+          config:
+            auth_enabled: false
         
         promtail:
           enabled: true
           config:
-            lokiAddress: http://loki:3100/loki/api/v1/push
+            lokiAddress: http://logging-loki:3100/loki/api/v1/push
