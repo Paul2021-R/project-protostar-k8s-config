@@ -49,6 +49,6 @@ spec:
                     requests:
                       storage: 20Gi
             # Centre 서버가 데이터를 가져갈 수 있도록 구멍 뚫기
-            service:
-              type: NodePort
-              nodePort: 30090
+          service:
+            type: NodePort
+            nodePort: 30090
