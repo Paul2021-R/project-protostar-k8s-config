@@ -17,36 +17,8 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true
 
-  source:
-    repoURL: https://grafana.github.io/helm-charts
-    chart: loki
-    targetRevision: 6.46.0
-    
-    helm:
-      values: |
-        deploymentMode: SingleBinary
-
-        loki:
-          auth_enabled: false
-          storage:
-            type: filesystem
-            bucketNames:
-              chunks: loki-chunks
-              ruler: loki-ruler
-            filesystem:
-              directory: /loki/chunks
-
-        singleBinary:
-          replicas: 1
-          persistence:
-            enabled: true
-            size: 10Gi
-            storageClassName: microk8s-hostpath
-
-        gateway:
-          enabled: true
-          service:
-            type: NodePort
-            nodePort: 30100
+  sources:
+    - repoURL: https://github.com/grafana/loki
+      path: production/kube
+      targetRevision: v3.5.0
