@@ -13,11 +13,12 @@ spec:
   
   syncPolicy:
     automated:
-      prune: true
-      selfHeal: true
+      prune: false
+      selfHeal: false
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+      - RespectIgnoreDifferences=true  
 
   source:
     repoURL: https://grafana.github.io/helm-charts
