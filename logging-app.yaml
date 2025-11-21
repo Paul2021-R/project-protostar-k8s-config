@@ -17,7 +17,7 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true # CRD 충돌 방지
+      - ServerSideApply=true
 
   source:
     repoURL: https://grafana.github.io/helm-charts
@@ -26,18 +26,12 @@ spec:
     
     helm:
       values: |
-        # ========================================================
-        # LOKI CORE CONFIGURATION (LOKI.YML 내부 설정)
-        # ========================================================
         loki:
-          # 1. 이미지 버전 명시 (Grafana v12 호환성 확보)
           image:
             tag: 3.6.0
             
-          # 2. 인증 설정
           auth_enabled: false
           
-          # 3. TSDB 스키마 설정
           schemaConfig:
             configs:
               - from: "2024-04-01"
@@ -48,22 +42,19 @@ spec:
                   prefix: loki_index_
                   period: 24h
           
-          # 4. 유효성 검사 및 고급 기능 설정
           limits_config:
             allow_structured_metadata: true
             volume_enabled: true
             
-          # 5. 필수 컴포넌트 활성화
           pattern_ingester:
             enabled: true
           ruler:
             enable_api: true
             
-          # 6. 저장소 타입 및 MinIO 접속 정보
           storage:
-            type: s3 # MinIO를 S3처럼 사용
+            type: s3
             bucketNames:
-              chunks: loki-data-chunks # 유효성 검사 필수 통과 항목
+              chunks: loki-data-chunks
               ruler: loki-data-ruler
               admin: loki-data-admin
             s3:
@@ -72,27 +63,36 @@ spec:
               accessKeyId: admin
               secretAccessKey: supersecret
               
-        # ========================================================
-        # DEPLOYMENT CONFIGURATION (HELM 차트 제어)
-        # ========================================================
+        # ========== 핵심 변경 ==========
+        deploymentMode: SimpleScalable  # ← SingleBinary 대신 SimpleScalable
         
-        # 7. Monolithic 모드 강제
-        deploymentMode: SingleBinary
-        singleBinary:
+        # SingleBinary 제거
+        # singleBinary:
+        #   replicas: 0
+        
+        # 대신 각 컴포넌트별 replicas 설정
+        backend:
           replicas: 2
-          # [필수] PVC 설정
           persistence:
             enabled: true
             storageClassName: microk8s-hostpath
             size: 10Gi
             
-        # 8. [에러 해결] 모든 분산 컴포넌트 복제본 0 설정 (유효성 검사 통과용)
-        backend:
-          replicas: 0
         read:
-          replicas: 0
+          replicas: 2
+          persistence:
+            enabled: true
+            storageClassName: microk8s-hostpath
+            size: 5Gi
+            
         write:
-          replicas: 0
+          replicas: 2
+          persistence:
+            enabled: true
+            storageClassName: microk8s-hostpath
+            size: 5Gi
+
+        # 사용 안하는 컴포넌트
         ingester:
           replicas: 0
         querier:
@@ -112,14 +112,12 @@ spec:
         bloomGateway:
           replicas: 0
 
-        # 9. [저장소] MinIO (S3 서버) 활성화
         minio:
           enabled: true
           auth:
             rootUser: admin
             rootPassword: supersecret
             
-        # 10. Promtail 및 Service 설정
         promtail:
           enabled: true
           config:
@@ -129,3 +127,133 @@ spec:
         service:
           type: NodePort
           nodePort: 30100
+
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: logging
+#   namespace: argocd
+#   finalizers:
+#     - resources-finalizer.argocd.argoproj.io
+# spec:
+#   project: default
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: logging
+  
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
+#     syncOptions:
+#       - CreateNamespace=true
+#       - ServerSideApply=true # CRD 충돌 방지
+
+#   source:
+#     repoURL: https://grafana.github.io/helm-charts
+#     chart: loki
+#     targetRevision: 6.x.x 
+    
+#     helm:
+#       values: |
+#         # ========================================================
+#         # LOKI CORE CONFIGURATION (LOKI.YML 내부 설정)
+#         # ========================================================
+#         loki:
+#           # 1. 이미지 버전 명시 (Grafana v12 호환성 확보)
+#           image:
+#             tag: 3.6.0
+            
+#           # 2. 인증 설정
+#           auth_enabled: false
+          
+#           # 3. TSDB 스키마 설정
+#           schemaConfig:
+#             configs:
+#               - from: "2024-04-01"
+#                 store: tsdb
+#                 object_store: s3
+#                 schema: v13
+#                 index:
+#                   prefix: loki_index_
+#                   period: 24h
+          
+#           # 4. 유효성 검사 및 고급 기능 설정
+#           limits_config:
+#             allow_structured_metadata: true
+#             volume_enabled: true
+            
+#           # 5. 필수 컴포넌트 활성화
+#           pattern_ingester:
+#             enabled: true
+#           ruler:
+#             enable_api: true
+            
+#           # 6. 저장소 타입 및 MinIO 접속 정보
+#           storage:
+#             type: s3 # MinIO를 S3처럼 사용
+#             bucketNames:
+#               chunks: loki-data-chunks # 유효성 검사 필수 통과 항목
+#               ruler: loki-data-ruler
+#               admin: loki-data-admin
+#             s3:
+#               endpoint: logging-minio:9000
+#               insecure: true
+#               accessKeyId: admin
+#               secretAccessKey: supersecret
+              
+#         # ========================================================
+#         # DEPLOYMENT CONFIGURATION (HELM 차트 제어)
+#         # ========================================================
+        
+#         deploymentMode: SingleBinary
+#         singleBinary:
+#           replicas: 2
+#           # [필수] PVC 설정
+#           persistence:
+#             enabled: true
+#             storageClassName: microk8s-hostpath
+#             size: 10Gi
+            
+#         backend:
+#           replicas: 0
+#         read:
+#           replicas: 0
+#         write:
+#           replicas: 0
+#         ingester:
+#           replicas: 0
+#         querier:
+#           replicas: 0
+#         queryFrontend:
+#           replicas: 0
+#         queryScheduler:
+#           replicas: 0
+#         distributor:
+#           replicas: 0
+#         compactor:
+#           replicas: 0
+#         indexGateway:
+#           replicas: 0
+#         bloomCompactor:
+#           replicas: 0
+#         bloomGateway:
+#           replicas: 0
+
+#         # 9. [저장소] MinIO (S3 서버) 활성화
+#         minio:
+#           enabled: true
+#           auth:
+#             rootUser: admin
+#             rootPassword: supersecret
+            
+#         # 10. Promtail 및 Service 설정
+#         promtail:
+#           enabled: true
+#           config:
+#             clients:
+#               - url: http://logging-loki:3100/loki/api/v1/push
+            
+#         service:
+#           type: NodePort
+#           nodePort: 30100
