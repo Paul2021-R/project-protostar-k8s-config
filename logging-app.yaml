@@ -18,7 +18,6 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=false
-      - RespectIgnoreDifferences=true
 
   source:
     repoURL: https://grafana.github.io/helm-charts
@@ -58,18 +57,9 @@ spec:
               secretAccessKey: supersecret
               
         deploymentMode: SingleBinary
-
         singleBinary:
           replicas: 3
-          persistence:
-            enabled: true
-            storageClassName: microk8s-hostpath
-            size: 10Gi
-            # ← 이 부분 명시적 지정
-            accessModes:
-              - ReadWriteOnce
-            labels: {}
-            annotations: {}
+          # persistence 설정 제거 → 기본값 사용
 
         backend:
           replicas: 0
