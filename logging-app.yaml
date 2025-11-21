@@ -11,21 +11,65 @@ spec:
     server: https://kubernetes.default.svc
     namespace: logging
   
-  # 이 네임스페이스에 ClusterRole/ClusterRoleBinding 리소스도 포함되므로 주의합니다.
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true
-      - RespectIgnoreDifferences=true # RBAC 관련 변경사항 무시
+      - ServerSideApply=true # 대형 CRD 설치 오류 해결
       
   source:
-    repoURL: https://github.com/Paul2021-R/project-protostar-k8s-config.git
-    targetRevision: main
-    # 3개의 파일을 모두 포함하는 폴더 경로를 지정
-    directory:
-      recurse: true
-      jsonnet: {} # JSONNet 템플릿 처리기 비활성화 (순수 YAML만 사용)
-    path: infrastructure/logging
+    repoURL: https://grafana.github.io/helm-charts
+    chart: loki
+    targetRevision: 6.x.x 
+    
+    helm:
+      values: |
+        loki:
+          # 1. [버전] Grafana v12와 호환되는 최신 안정 이미지 (v3.6.0) 사용
+          image:
+            tag: 3.6.0
+            
+          # 2. [모드] 단일 바이너리 모드 사용
+          deploymentMode: SingleBinary
+          
+          # 3. [인증] 인증 비활성화 (Grafana에서 헤더 설정 불필요)
+          auth_enabled: false
+          
+          # 4. [Persistence] 단일 바이너리 모드에 필요한 PVC 및 스토리지 클래스 설정
+          singleBinary:
+            replicas: 1
+            persistence:
+              enabled: true
+              storageClassName: microk8s-hostpath # MicroK8s에서 활성화된 스토리지
+              size: 10Gi
+
+          # 5. [저장소/스키마] Loki 바이너리의 필수 요구 사항 정의 (설치 오류 해결)
+          storage:
+            type: filesystem
+            bucketNames: # 최신 차트 유효성 검사 통과용 더미 버킷
+              chunks: loki-chunks
+              ruler: loki-ruler
+              admin: loki-admin
+            
+          schemaConfig:
+            configs:
+              # v11 스키마와 boltdb-shipper를 사용한 파일 시스템 저장소 정의
+              - from: 2020-10-25
+                store: boltdb-shipper
+                object_store: filesystem
+                schema: v11
+                index:
+                  prefix: index_
+                  period: 24h
+
+        promtail:
+          enabled: true
+          config:
+            lokiAddress: http://logging-loki:3100/loki/api/v1/push
+            
+        # 6. 외부 노출 서비스
+        service:
+          type: NodePort
+          nodePort: 30100
