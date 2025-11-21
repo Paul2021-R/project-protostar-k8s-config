@@ -20,7 +20,7 @@ data:
         kvstore:
           store: inmemory
 
-    # [필수] 저장소 스키마 정의 (설치 오류 해결)
+    # [필수] 저장소 스키마 정의 (유효성 검사 통과용)
     schema_config:
       configs:
         - from: 2020-10-25
@@ -40,3 +40,7 @@ data:
         shared_store: filesystem
       filesystem:
         directory: /data/loki/chunks
+    
+    # [핵심 수정] Monolithic 모드에서 Loki 바이너리가 요구하는 빈 블록 정의
+    ruler: {}
+    compactor: {}
