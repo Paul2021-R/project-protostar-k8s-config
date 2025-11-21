@@ -13,36 +13,9 @@ spec:
     namespace: default
 
   source:
-    repoURL: registry-1.docker.io/bitnamicharts
-    chart: rabbitmq
-    targetRevision: 16.0.14
-    helm:
-      values: |
-        image:
-          registry: docker.io
-          repository: bitnami/rabbitmq
-          tag: 4.1.3-debian-12-r1
-
-        # 1 인증 정보 설정 (초기 작업용 고정값)
-        auth: 
-          username: user
-          password: protostar_pass
-          erlangCookie: "secret_cookie_protostar"
-
-        # 2 리소스 절약을 위해 1개만 띄우기
-        replicaCount: 1
-
-        # 3 데이터 보존을 위한 스토리지 설정
-        persistence:
-          enabled: true
-          size: 8Gi
-
-        # 4 내부 통신 설정 (외부 제외)
-        service:
-          type: ClusterIP
-        
-        # 5 관리 콘솔 플러그인 활성화
-        extraPlugins: "rabbitmq_management rabbitmq_peer_discovery_k8s"
+    repoURL: https://github.com/Paul2021-R/project-protostar-k8s-config.git
+    targetRevision: main
+    path: infrastructure/rabbitmq
 
   syncPolicy:
     automated: 
