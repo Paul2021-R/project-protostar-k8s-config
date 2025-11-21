@@ -13,9 +13,9 @@ spec:
     namespace: default
 
   source:
-    repoURL: https://charts.bitnami.com/bitnami
+    repoURL: registry-1.docker.io/bitnamicharts
     chart: rabbitmq
-    targetRevision: 15.x.x
+    targetRevision: 16.0.14
 
     helm:
       values: |
