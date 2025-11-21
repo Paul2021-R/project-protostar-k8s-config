@@ -43,7 +43,7 @@ spec:
             enabled: true
           limits_config:
             allow_structured_metadata: true
-            volume_enabled: true
+            volume_enabled: false
           ruler:
             enable_api: true
           storage:
@@ -92,7 +92,7 @@ spec:
           persistence:
             enabled: true
             storageClassName: microk8s-hostpath
-            size: 20Gi
+            size: 10Gi
             
         promtail:
           enabled: true
