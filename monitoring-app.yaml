@@ -27,8 +27,6 @@ spec:
       values: |
         # 1. Node Exporter 포트 변경
         prometheus-node-exporter:
-          extraArgs:
-            - --web.listen-address=:9200
 
           service:
             port: 9200
