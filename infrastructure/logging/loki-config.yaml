@@ -1,4 +1,4 @@
-# infrastructure/logging/loki-config.yaml (수정)
+# infrastructure/logging/loki-config.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -11,6 +11,7 @@ data:
       http_listen_port: 3100
       grpc_listen_port: 9095
 
+    # 단일 노드(Monolithic) 환경을 위한 설정
     common:
       path_prefix: /loki
       replication_factor: 1
@@ -18,6 +19,10 @@ data:
         instance_addr: 127.0.0.1
         kvstore:
           store: inmemory
+
+    # [핵심 수정] 유효성 검사 오류 해결: 메타데이터 요구 사항 비활성화
+    limits_config:
+      allow_structured_metadata: false
 
     schema_config:
       configs:
@@ -34,7 +39,6 @@ data:
         active_index_directory: /data/loki/index
         cache_location: /data/loki/cache
         cache_ttl: 24h
-        # [삭제됨] 여기가 문제의 shared_store 줄이 있던 위치입니다.
       filesystem:
         directory: /data/loki/chunks
     
