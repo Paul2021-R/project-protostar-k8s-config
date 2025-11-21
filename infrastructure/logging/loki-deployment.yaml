@@ -35,6 +35,8 @@ spec:
         app: loki
     spec:
       terminationGracePeriodSeconds: 15
+      securityContext:
+        fsGroup: 1000
       volumes:
         - name: config
           configMap:
@@ -44,6 +46,7 @@ spec:
           image: grafana/loki:3.6.0 # [순정 버전] 최신 Loki 이미지
           args:
             - "-config.file=/etc/loki/loki.yaml"
+            - "-validation.allow-structured-metadata=false"
           ports:
             - name: http-metrics
               containerPort: 3100
