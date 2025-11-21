@@ -31,25 +31,37 @@ spec:
             tag: 3.6.0
             
           auth_enabled: false
-          deploymentMode: Monolithic
           
-          # [핵심 수정] 설치 오류 해결: Loki 스키마 정의 추가
-          schemaConfig:
-            configs:
-              - from: 2020-10-25  # 스키마 적용 시작 날짜 (현재보다 과거여야 함)
-                store: boltdb-shipper
-                object_store: filesystem # 파일 시스템 사용 명시
-                schema: v11
-                index:
-                  prefix: index_
-                  period: 24h
-
-          # [필수] 버킷 이름 정의 (설치 오류 해결)
+          # [핵심 수정] Filesystem 스토리지를 사용하고, Monolithic 모드를 강제합니다.
+          deploymentMode: SingleBinary
+          
+          # [저장소 설정] PV/PVC를 사용하는 Filesystem으로 명시합니다.
           storage:
+            type: filesystem
+            filesystem: {}
             bucketNames:
               chunks: loki-data-chunks
               ruler: loki-data-ruler
               admin: loki-data-admin
+            
+          # 분산 모드 컴포넌트 비활성화 (오작동 방지)
+          backend:
+            enabled: false
+          read:
+            enabled: false
+          write:
+            enabled: false
+          
+          # 스키마 설정 (유지)
+          schemaConfig:
+            configs:
+              - from: 2020-10-25
+                store: boltdb-shipper
+                object_store: filesystem
+                schema: v11
+                index:
+                  prefix: index_
+                  period: 24h
 
         promtail:
           enabled: true
