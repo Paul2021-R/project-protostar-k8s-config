@@ -28,11 +28,13 @@ spec:
         # 1. Node Exporter 포트 변경 (9101)
         nodeExporter:
           enabled: true
+
+          extraArgs:
+            - --web.listen-address=:9101
+
           service:
             port: 9101
             targetPort: 9101
-          extraArgs:
-            - --web.listen-address=:9101
 
         # 2. [핵심] K8s 내부 Grafana 비활성화 (Centre Grafana 사용)
         grafana:
