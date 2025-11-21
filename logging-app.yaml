@@ -13,12 +13,12 @@ spec:
   
   syncPolicy:
     automated:
-      prune: false              # ← false
-      selfHeal: false           # ← false
+      prune: false
+      selfHeal: false
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=false   # ← false (race condition 원인)
-      - RespectIgnoreDifferences=true  # ← 추가
+      - ServerSideApply=false
+      - RespectIgnoreDifferences=true
 
   source:
     repoURL: https://grafana.github.io/helm-charts
@@ -43,10 +43,8 @@ spec:
           limits_config:
             allow_structured_metadata: true
             volume_enabled: true
-            
           ruler:
             enable_api: true
-            
           storage:
             type: s3
             bucketNames:
@@ -66,7 +64,12 @@ spec:
           persistence:
             enabled: true
             storageClassName: microk8s-hostpath
-            size: 5Gi
+            size: 10Gi
+            # ← 이 부분 명시적 지정
+            accessModes:
+              - ReadWriteOnce
+            labels: {}
+            annotations: {}
 
         backend:
           replicas: 0
@@ -74,7 +77,6 @@ spec:
           replicas: 0
         write:
           replicas: 0
-
         ingester:
           replicas: 0
         querier:
