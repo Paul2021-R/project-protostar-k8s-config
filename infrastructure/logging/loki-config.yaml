@@ -11,16 +11,15 @@ data:
       http_listen_port: 3100
       grpc_listen_port: 9095
 
-    # 단일 노드(Monolithic) 환경을 위한 설정
     common:
       path_prefix: /loki
       replication_factor: 1
       ring:
-        instance_addr: 127.0.0.1
+        instance_addr: 127.0.0.0 # localhost에서 변경
         kvstore:
           store: inmemory
 
-    # [핵심 수정] 유효성 검사 오류 해결: 메타데이터 요구 사항 비활성화
+    # [핵심 수정] 누락된 limits_config 블록 추가
     limits_config:
       allow_structured_metadata: false
 
