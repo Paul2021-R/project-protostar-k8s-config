@@ -46,22 +46,25 @@ spec:
             volume_enabled: true
           ruler:
             enable_api: true
-          # storage:
-          #   type: s3
-          #   bucketNames:
-          #     chunks: loki-data-chunks
-          #     ruler: loki-data-ruler
-          #     admin: loki-data-admin
-          #   s3:
-          #     endpoint: logging-minio:9000
-          #     insecure: true
-          #     accessKeyId: admin
-          #     secretAccessKey: supersecret
+          storage:
+            type: s3
+            bucketNames:
+              chunks: loki-data-chunks
+              ruler: loki-data-ruler
+              admin: loki-data-admin
+            s3:
+              endpoint: logging-minio:9000
+              insecure: true
+              accessKeyId: admin
+              secretAccessKey: supersecret
               
         deploymentMode: SingleBinary
         singleBinary:
           replicas: 3
-          # persistence 설정 제거 → 기본값 사용
+          persistence:
+            enabled: true
+            storageClassName: microk8s-hostpath  # ← 명시적 지정
+            size: 10Gi
 
         backend:
           replicas: 0
