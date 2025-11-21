@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: redis
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+
+  source:
+    repoURL: https://github.com/Paul2021-R/project-protostar-k8s-config.git
+    targetRevision: main
+    path: infrastructure/redis
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
