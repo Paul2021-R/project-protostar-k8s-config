@@ -42,4 +42,7 @@ data:
         directory: /data/loki/chunks
     
     ruler: {}
-    compactor: {}
+    compactor:
+      working_directory: /data/loki/compactor 
+      retention_enabled: true
+      retention_period: 720h # 30일 (선택 사항)
