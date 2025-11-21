@@ -79,7 +79,7 @@ spec:
         # 7. Monolithic 모드 강제
         deploymentMode: SingleBinary
         singleBinary:
-          replicas: 1
+          replicas: 2
           # [필수] PVC 설정
           persistence:
             enabled: true
