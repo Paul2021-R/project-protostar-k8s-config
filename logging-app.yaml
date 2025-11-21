@@ -61,8 +61,6 @@ spec:
         deploymentMode: SingleBinary
         singleBinary:
           replicas: 3
-          persistence:
-            enabled: false
 
         backend:
           replicas: 0
@@ -91,9 +89,10 @@ spec:
 
         minio:
           enabled: true
-          auth:
-            rootUser: admin
-            rootPassword: supersecret
+          persistence:
+            enabled: true
+            storageClassName: microk8s-hostpath
+            size: 20Gi
             
         promtail:
           enabled: true
