@@ -30,6 +30,13 @@ spec:
 
         loki:
           auth_enabled: false
+          storage:
+            type: filesystem
+            bucketNames:
+              chunks: loki-chunks
+              ruler: loki-ruler
+            filesystem:
+              directory: /loki/chunks
 
         singleBinary:
           replicas: 1
