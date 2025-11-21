@@ -25,14 +25,14 @@ spec:
     
     helm:
       values: |
-        # 1. Node Exporter 포트 변경 (9101)
+        # 1. Node Exporter 포트 변경
         prometheus-node-exporter:
           extraArgs:
-            - --web.listen-address=:9101
+            - --web.listen-address=:9200
 
           service:
-            port: 9101
-            targetPort: 9101
+            port: 9200
+            targetPort: 9200
 
         # 2. [핵심] K8s 내부 Grafana 비활성화 (Centre Grafana 사용)
         grafana:
