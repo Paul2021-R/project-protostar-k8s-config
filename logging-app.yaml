@@ -64,18 +64,11 @@ spec:
               chunks: loki-data-chunks
               ruler: loki-data-ruler
               admin: loki-data-admin
-          #   s3:
-          #     endpoint: logging-minio:9000
-          #     insecure: true
-          #     accessKeyId: admin
-          #     secretAccessKey: supersecret
 
         deploymentMode: SingleBinary
         singleBinary:
           replicas: 1
-          service:
-            type: NodePort
-            nodePort: 32280
+
         backend:
           replicas: 0
         read:
@@ -103,16 +96,7 @@ spec:
 
         minio:
           enabled: false
-          # persistence:
-          #   enabled: true
-          #   storageClassName: microk8s-hostpath
-          #   size: 10Gi
 
-        promtail:
-          enabled: true
-          config:
-            clients:
-              - url: http://logging-loki:3100/loki/api/v1/push
           
 
           
