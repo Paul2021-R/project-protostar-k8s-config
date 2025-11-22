@@ -27,9 +27,6 @@ spec:
     helm:
       values: |
         loki:
-          service:
-            type: NodePort
-            nodePort: 30100
           auth_enabled: false
           server:
             http_listen_port: 3100
@@ -76,7 +73,10 @@ spec:
         deploymentMode: SingleBinary
         singleBinary:
           replicas: 1
-
+          service:
+            type: NodePort
+            nodePort: 30100
+            
         backend:
           replicas: 0
         read:
