@@ -29,7 +29,7 @@ spec:
         loki:
           auth_enabled: false
           server:
-            http_listen_port: 30100
+            http_listen_port: 3100
             http_listen_address: 0.0.0.0
           common:
             ring:
