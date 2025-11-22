@@ -28,13 +28,20 @@ spec:
       values: |
         loki:
           auth_enabled: false
-          commonConfig:
-            replication_factor: 3
+          # server:
+          #   http_listen_port: 30100
+          common:
+            ring:
+              kvstore:
+                store: inmemory
+            replication_factor: 1
+            path_prefix: /tmp/loki
+
           schemaConfig:
             configs:
-              - from: "2024-04-01"
+              - from: "2020-05-15"
                 store: tsdb
-                object_store: s3
+                object_store: filesystem
                 schema: v13
                 index:
                   prefix: loki_index_
@@ -43,24 +50,28 @@ spec:
             enabled: true
           limits_config:
             allow_structured_metadata: true
-            volume_enabled: false
+            volume_enabled: true 
           ruler:
             enable_api: true
+          storage_config:
+            filesystem:
+              directory: /tmp/loki/chunks
+
           storage:
-            type: s3
+            type: filesystem
             bucketNames:
               chunks: loki-data-chunks
               ruler: loki-data-ruler
               admin: loki-data-admin
-            s3:
-              endpoint: logging-minio:9000
-              insecure: true
-              accessKeyId: admin
-              secretAccessKey: supersecret
+          #   s3:
+          #     endpoint: logging-minio:9000
+          #     insecure: true
+          #     accessKeyId: admin
+          #     secretAccessKey: supersecret
               
         deploymentMode: SingleBinary
         singleBinary:
-          replicas: 3
+          replicas: 1
 
         backend:
           replicas: 0
@@ -88,11 +99,11 @@ spec:
           replicas: 0
 
         minio:
-          enabled: true
-          persistence:
-            enabled: true
-            storageClassName: microk8s-hostpath
-            size: 10Gi
+          enabled: false
+          # persistence:
+          #   enabled: true
+          #   storageClassName: microk8s-hostpath
+          #   size: 10Gi
             
         promtail:
           enabled: true
