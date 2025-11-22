@@ -1,119 +1,3 @@
-# apiVersion: argoproj.io/v1alpha1
-# kind: Application
-# metadata:
-#   name: logging
-#   namespace: argocd
-#   finalizers:
-#     - resources-finalizer.argocd.argoproj.io
-# spec:
-#   project: default
-#   destination:
-#     server: https://kubernetes.default.svc
-#     namespace: logging
-  
-#   syncPolicy:
-#     automated:
-#       prune: false
-#       selfHeal: false
-#     syncOptions:
-#       - CreateNamespace=true
-#       - ServerSideApply=false
-
-#   source:
-#     repoURL: https://grafana.github.io/helm-charts
-#     chart: loki
-#     targetRevision: 6.x.x 
-    
-#     helm:
-#       values: |
-#         loki:
-#           auth_enabled: false
-#           server:
-#             http_listen_port: 3100
-#             http_listen_address: 0.0.0.0
-#           common:
-#             ring:
-#               kvstore:
-#                 store: inmemory
-#             replication_factor: 1
-#             path_prefix: /tmp/loki
-
-#           schemaConfig:
-#             configs:
-#               - from: "2020-05-15"
-#                 store: tsdb
-#                 object_store: filesystem
-#                 schema: v13
-#                 index:
-#                   prefix: loki_index_
-#                   period: 24h
-#           pattern_ingester:
-#             enabled: true
-#           limits_config:
-#             allow_structured_metadata: true
-#             volume_enabled: true 
-#           ruler:
-#             enable_api: true
-#           storage_config:
-#             filesystem:
-#               directory: /tmp/loki/chunks
-
-#           storage:
-#             type: filesystem
-#             bucketNames:
-#               chunks: loki-data-chunks
-#               ruler: loki-data-ruler
-#               admin: loki-data-admin
-#           #   s3:
-#           #     endpoint: logging-minio:9000
-#           #     insecure: true
-#           #     accessKeyId: admin
-#           #     secretAccessKey: supersecret
-              
-#         deploymentMode: SingleBinary
-#         singleBinary:
-#           replicas: 1
-#           service:
-#             type: NodePort
-#             nodePort: 30100
-#         backend:
-#           replicas: 0
-#         read:
-#           replicas: 0
-#         write:
-#           replicas: 0
-#         ingester:
-#           replicas: 0
-#         querier:
-#           replicas: 0
-#         queryFrontend:
-#           replicas: 0
-#         queryScheduler:
-#           replicas: 0
-#         distributor:
-#           replicas: 0
-#         compactor:
-#           replicas: 0
-#         indexGateway:
-#           replicas: 0
-#         bloomCompactor:
-#           replicas: 0
-#         bloomGateway:
-#           replicas: 0
-
-#         minio:
-#           enabled: false
-#           # persistence:
-#           #   enabled: true
-#           #   storageClassName: microk8s-hostpath
-#           #   size: 10Gi
-            
-#         promtail:
-#           enabled: true
-#           config:
-#             clients:
-#               - url: http://logging-loki:3100/loki/api/v1/push
-          
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -180,17 +64,22 @@ spec:
               chunks: loki-data-chunks
               ruler: loki-data-ruler
               admin: loki-data-admin
-              
+          #   s3:
+          #     endpoint: logging-minio:9000
+          #     insecure: true
+          #     accessKeyId: admin
+          #     secretAccessKey: supersecret
+          promtail:
+            enabled: true
+            config:
+              clients:
+                - url: http://logging-loki:3100/loki/api/v1/push
         deploymentMode: SingleBinary
         singleBinary:
           replicas: 1
           service:
             type: NodePort
             nodePort: 30100
-          persistence:
-            enabled: true
-            size: 10Gi
-            
         backend:
           replicas: 0
         read:
@@ -218,126 +107,10 @@ spec:
 
         minio:
           enabled: false
+          # persistence:
+          #   enabled: true
+          #   storageClassName: microk8s-hostpath
+          #   size: 10Gi
             
-        promtail:
-          enabled: true
+
           
-          # 중요: DaemonSet으로 각 노드에서 실행
-          daemonSet:
-            enabled: true
-          
-          # 권한 설정 (MicroK8s에서 중요)
-          rbac:
-            create: true
-            pspEnabled: false
-          
-          serviceAccount:
-            create: true
-          
-          # 보안 컨텍스트 설정
-          securityContext:
-            privileged: true
-            runAsUser: 0
-            runAsGroup: 0
-          
-          # 호스트 경로 마운트
-          defaultVolumes:
-            - name: run
-              hostPath:
-                path: /run/promtail
-            - name: containers
-              hostPath:
-                path: /var/lib/docker/containers
-            - name: pods
-              hostPath:
-                path: /var/log/pods
-          
-          defaultVolumeMounts:
-            - name: run
-              mountPath: /run/promtail
-            - name: containers
-              mountPath: /var/lib/docker/containers
-              readOnly: true
-            - name: pods
-              mountPath: /var/log/pods
-              readOnly: true
-          
-          config:
-            # Loki 엔드포인트 설정
-            clients:
-              - url: http://logging-loki:3100/loki/api/v1/push
-            
-            # 스크랩 설정
-            snippets:
-              scrapeConfigs: |
-                # Pod logs
-                - job_name: kubernetes-pods
-                  pipeline_stages:
-                    - cri: {}
-                  kubernetes_sd_configs:
-                    - role: pod
-                  relabel_configs:
-                    - source_labels:
-                        - __meta_kubernetes_pod_controller_name
-                      regex: ([0-9a-z-.]+?)(-[0-9a-f]{8,10})?
-                      action: replace
-                      target_label: __tmp_controller_name
-                    - source_labels:
-                        - __meta_kubernetes_pod_label_app_kubernetes_io_name
-                        - __meta_kubernetes_pod_label_app
-                        - __tmp_controller_name
-                        - __meta_kubernetes_pod_name
-                      regex: ^;*([^;]+)(;.*)?$
-                      action: replace
-                      target_label: app
-                    - source_labels:
-                        - __meta_kubernetes_pod_label_app_kubernetes_io_instance
-                        - __meta_kubernetes_pod_label_instance
-                      regex: ^;*([^;]+)(;.*)?$
-                      action: replace
-                      target_label: instance
-                    - source_labels:
-                        - __meta_kubernetes_pod_label_app_kubernetes_io_component
-                        - __meta_kubernetes_pod_label_component
-                      regex: ^;*([^;]+)(;.*)?$
-                      action: replace
-                      target_label: component
-                    - action: replace
-                      source_labels:
-                      - __meta_kubernetes_pod_node_name
-                      target_label: node_name
-                    - action: replace
-                      source_labels:
-                      - __meta_kubernetes_namespace
-                      target_label: namespace
-                    - action: replace
-                      replacement: $1
-                      separator: /
-                      source_labels:
-                      - namespace
-                      - app
-                      target_label: job
-                    - action: replace
-                      source_labels:
-                      - __meta_kubernetes_pod_name
-                      target_label: pod
-                    - action: replace
-                      source_labels:
-                      - __meta_kubernetes_pod_container_name
-                      target_label: container
-                    - action: replace
-                      replacement: /var/log/pods/*$1/*.log
-                      separator: /
-                      source_labels:
-                      - __meta_kubernetes_pod_uid
-                      - __meta_kubernetes_pod_container_name
-                      target_label: __path__
-                    - action: replace
-                      regex: true/(.*)
-                      replacement: /var/log/pods/*$1/*.log
-                      separator: /
-                      source_labels:
-                      - __meta_kubernetes_pod_annotationpresent_kubernetes_io_config_hash
-                      - __meta_kubernetes_pod_annotation_kubernetes_io_config_hash
-                      - __meta_kubernetes_pod_container_name
-                      target_label: __path__
