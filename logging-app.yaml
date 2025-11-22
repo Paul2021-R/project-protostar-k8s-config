@@ -69,17 +69,13 @@ spec:
           #     insecure: true
           #     accessKeyId: admin
           #     secretAccessKey: supersecret
-          promtail:
-            enabled: true
-            config:
-              clients:
-                - url: http://logging-loki:3100/loki/api/v1/push
+
         deploymentMode: SingleBinary
         singleBinary:
           replicas: 1
           service:
             type: NodePort
-            nodePort: 30100
+            nodePort: 32280
         backend:
           replicas: 0
         read:
@@ -111,6 +107,12 @@ spec:
           #   enabled: true
           #   storageClassName: microk8s-hostpath
           #   size: 10Gi
-            
+
+        promtail:
+          enabled: true
+          config:
+            clients:
+              - url: http://logging-loki:3100/loki/api/v1/push
+          
 
           
