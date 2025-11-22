@@ -27,6 +27,9 @@ spec:
     helm:
       values: |
         loki:
+          service:
+            type: NodePort
+            nodePort: 30100
           auth_enabled: false
           server:
             http_listen_port: 3100
@@ -112,6 +115,3 @@ spec:
             clients:
               - url: http://logging-loki:3100/loki/api/v1/push
             
-        service:
-          type: NodePort
-          nodePort: 30100
