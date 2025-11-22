@@ -68,6 +68,8 @@ spec:
         deploymentMode: SingleBinary
         singleBinary:
           replicas: 1
+          service:
+            type: ClusterIP
 
         backend:
           replicas: 0
@@ -95,6 +97,9 @@ spec:
           replicas: 0
 
         minio:
+          enabled: false
+        
+        promtail:
           enabled: false
 
           
