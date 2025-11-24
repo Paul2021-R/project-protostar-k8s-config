@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-ingress
+  namespace: argocd # [중요] ArgoCD가 설치된 네임스페이스
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # nginx.ingress.kubernetes.io/backend-protocol: "HTTPS" # ArgoCD는 내부도 HTTPS임
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP" # ArgoCD는 내부도 HTTPS임
+spec:
+  ingressClassName: public
+  tls:
+  - hosts:
+    - argocd.paulryu93.ddns.net
+    secretName: argocd-tls
+  rules:
+  - host: argocd.paulryu93.ddns.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: argocd-server
+            port:
+              number: 80 # ArgoCD 서비스 포트 (보통 80이나 443)
