@@ -1,0 +1,21 @@
+# 관리자 비밀번호 설정 (보안을 위해 추후 Secret으로 관리 권장, 일단은 고정값 사용)
+adminPassword: "admin"
+
+# 서비스 설정 (ClusterIP로 충분합니다. Ingress가 연결해줍니다.)
+service:
+  type: ClusterIP
+  port: 80
+
+# 자체 Ingress를 만들었으므로 차트 내장 Ingress는 끕니다.
+ingress:
+  enabled: false
+
+# 데이터 저장소 (껐다 켜도 데이터 유지)
+persistence:
+  enabled: true
+  # MicroK8s의 hostpath-provisioner가 있다면 스토리지 클래스 지정 안 해도 됨 (기본값 사용)
+  # size: 10Gi
+
+# (선택) MicroK8s 환경 최적화
+testFramework:
+  enabled: false

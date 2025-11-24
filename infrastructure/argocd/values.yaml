@@ -1,0 +1,17 @@
+server:
+  # [중요] 내부에서는 HTTP로 통신 (HTTPS 처리는 Ingress가 담당)
+  extraArgs:
+    - --insecure
+
+  # 자체 Ingress 끄기 (우리가 만든 것 사용)
+  ingress:
+    enabled: false
+  
+  # 서비스 타입 (Ingress 뒤에 숨음)
+  service:
+    type: ClusterIP
+
+# (선택) 알림 기능 등을 위한 설정이 필요하면 여기에 추가
+configs:
+  params:
+    server.insecure: true

@@ -1,0 +1,27 @@
+controller:
+  # 1. 안정적인 LTS 버전 고정
+  image:
+    tag: "2.528.2-lts-jdk21"
+  # 2. [핵심] 초기 플러그인 자동 설치 끄기 (일단 부팅부터 성공시킵시다)
+  installPlugins: []
+
+  # 3. MicroK8s 권한 문제 해결 (Root로 실행)
+  runAsUser: 0
+  runAsGroup: 0
+  fsGroup: 0
+
+  # 4. 관리자 계정
+  admin:
+    username: "admin"
+    password: "admin"
+
+  # 5. 네트워크 설정
+  serviceType: ClusterIP
+  jenkinsUrl: "https://jenkins.paulryu93.ddns.net"
+  
+  ingress:
+    enabled: false
+
+persistence:
+  enabled: true
+  size: "8Gi"

@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+helmCharts:
+- name: argo-cd
+  repo: https://argoproj.github.io/argo-helm
+  version: 7.6.12 # (ArgoCD v2.12.x 버전을 포함하는 안정적 차트)
+  releaseName: argocd
+  namespace: argocd
+  valuesFile: values.yaml

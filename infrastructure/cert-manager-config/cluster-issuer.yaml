@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod   # 이 이름을 기억해두세요 (앱에서 참조함)
+spec:
+  acme:
+    # 1. 이메일 주소 (인증서 만료 알림용)
+    email: ryu.axel@gmail.com
+    # 2. Let's Encrypt 프로덕션 서버 주소
+    server: https://acme-v02.api.letsencrypt.org/directory
+    # 3. 인증서 개인키 저장소 이름 (자동 생성됨)
+    privateKeySecretRef:
+      name: letsencrypt-prod-private-key
+    # 4. 인증 방식 (HTTP-01 Challenge)
+    solvers:
+    - http01:
+        ingress:
+          class: public  # MicroK8s 기본 ingress class는 보통 'public' 입니다.
