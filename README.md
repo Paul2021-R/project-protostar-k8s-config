@@ -1,1 +1,3 @@
-# k8s Configuration repository for Protostar
+
+## AI_Rules
+Code generation and task execution must adhere to the guidelines established in [project-protostar/docs/guide](../../docs/guide).
