@@ -13,9 +13,9 @@ spec:
           gatewayHTTPRoute:
             parentRefs:
             - name: service-gateway
-              namespace: service
+              namespace: service-gateway
       - http01:
           gatewayHTTPRoute:
             parentRefs:
             - name: infra-gateway
-              namespace: infra
+              namespace: infra-gateway
