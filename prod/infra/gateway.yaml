@@ -4,7 +4,7 @@ metadata:
   name: infra-gateway
   namespace: infra-gateway
 spec:
-  gatewayClassName: nginx
+  gatewayClassName: nginx-infra
   listeners:
     - name: minio-https
       port: 443
