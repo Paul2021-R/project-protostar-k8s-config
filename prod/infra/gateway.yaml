@@ -10,6 +10,9 @@ spec:
       port: 443
       protocol: HTTPS
       hostname: "minio.paulryu93.ddns.net"
+      allowedRoutes:
+        namespaces:
+          from: All
       tls:
         mode: Terminate
         certificateRefs:
@@ -19,6 +22,9 @@ spec:
       port: 443
       protocol: HTTPS
       hostname: "n8n.paulryu93.ddns.net"
+      allowedRoutes:
+        namespaces:
+          from: All
       tls:
         mode: Terminate
         certificateRefs:
@@ -28,3 +34,6 @@ spec:
       port: 80
       protocol: HTTP
       hostname: "*.paulryu93.ddns.net"
+      allowedRoutes:
+        namespaces:
+          from: All
