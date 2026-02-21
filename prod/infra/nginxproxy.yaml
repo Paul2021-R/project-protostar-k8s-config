@@ -1,0 +1,11 @@
+apiVersion: gateway.nginx.org/v1alpha2
+kind: NginxProxy
+metadata:
+  name: infra-ngf-proxy-config
+  namespace: infra-gateway
+spec:
+  rewriteClientIP:
+    mode: ProxyProtocol
+    trustedAddresses:
+      - type: CIDR
+        value: 0.0.0.0/0

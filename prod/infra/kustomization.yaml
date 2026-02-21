@@ -6,3 +6,4 @@ resources:
   - gateway.yaml
   - httproutes.yaml
   - certificates.yaml
+  - nginxproxy.yaml
