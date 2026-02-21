@@ -9,13 +9,19 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-prod
     solvers: 
-      - http01:
-          gatewayHTTPRoute:
-            parentRefs:
-            - name: service-gateway
-              namespace: service-gateway
-      - http01:
-          gatewayHTTPRoute:
-            parentRefs:
-            - name: infra-gateway
-              namespace: infra-gateway
+    - selector:
+        dnsNames:
+          - "*.paulryu93.ddns.net"
+      http01:
+        gatewayHTTPRoute:
+          parentRefs:
+          - name: infra-gateway
+            namespace: infra-gateway
+    - selector:
+        dnsNames:
+          - "*.protostar.ddns.net"
+      http01:
+        gatewayHTTPRoute:
+          parentRefs:
+          - name: service-gateway
+            namespace: service-gateway
