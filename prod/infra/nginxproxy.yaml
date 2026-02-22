@@ -1,3 +1,4 @@
+# prod/infra/nginxproxy.yaml
 apiVersion: gateway.nginx.org/v1alpha2
 kind: NginxProxy
 metadata:
@@ -9,3 +10,6 @@ spec:
     trustedAddresses:
       - type: CIDR
         value: 0.0.0.0/0
+  kubernetes:
+    service:
+      loadBalancerIP: "192.168.0.41"  # Centre IP, svclb를 Centre 노드에만 고정
