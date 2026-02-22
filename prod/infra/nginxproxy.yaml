@@ -12,4 +12,5 @@ spec:
         value: 0.0.0.0/0
   kubernetes:
     service:
-      loadBalancerIP: "192.168.0.41"  # Centre IP, svclb를 Centre 노드에만 고정
+      annotations:
+        svccontroller.k3s.cattle.io/lbpool: infra
