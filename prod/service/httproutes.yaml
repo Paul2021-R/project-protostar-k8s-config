@@ -1,4 +1,3 @@
-# httproutes.yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -6,13 +5,14 @@ metadata:
   namespace: service
 spec:
   parentRefs:
-  - name: protostar-gateway
+    - name: service-gateway
+      namespace: service-gateway
   hostnames:
-  - "service-protostar.ddns.net"
+    - "service-protostar.ddns.net"
   rules:
-  - backendRefs:
-    - name: protostar-frontend-service
-      port: 3000
+    - backendRefs:
+        - name: protostar-frontend-service
+          port: 3000
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -21,13 +21,14 @@ metadata:
   namespace: service
 spec:
   parentRefs:
-  - name: protostar-gateway
+    - name: service-gateway
+      namespace: service-gateway
   hostnames:
-  - "backend-protostar.ddns.net"
+    - "back-protostar.ddns.net"
   rules:
-  - backendRefs:
-    - name: protostar-nest-service
-      port: 3000
+    - backendRefs:
+        - name: protostar-nest-service
+          port: 3000
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -36,10 +37,11 @@ metadata:
   namespace: service
 spec:
   parentRefs:
-  - name: protostar-gateway
+    - name: service-gateway
+      namespace: service-gateway
   hostnames:
-  - "back-ai-protostar.ddns.net"
+    - "back-ai-protostar.ddns.net"
   rules:
-  - backendRefs:
-    - name: protostar-fastapi-service
-      port: 8000
+    - backendRefs:
+        - name: protostar-fastapi-service
+          port: 8000

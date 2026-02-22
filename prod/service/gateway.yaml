@@ -1,12 +1,51 @@
-# gateway_service.yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: service-gateway
-  namespace: service
+  namespace: service-gateway
 spec:
-  gatewayClassName: nginx
+  gatewayClassName: nginx-service
   listeners:
-  - name: http
-    port: 80
-    protocol: HTTP
+    - name: frontend-https
+      port: 443
+      protocol: HTTPS
+      hostname: "service-protostar.ddns.net"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: frontend-tls
+            kind: Secret
+    - name: nest-https
+      port: 443
+      protocol: HTTPS
+      hostname: "back-protostar.ddns.net"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: nest-tls
+            kind: Secret
+    - name: fastapi-https
+      port: 443
+      protocol: HTTPS
+      hostname: "back-ai-protostar.ddns.net"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: fastapi-tls
+            kind: Secret
+    - name: http
+      port: 80
+      protocol: HTTP
+      hostname: "*.ddns.net"
+      allowedRoutes:
+        namespaces:
+          from: All
