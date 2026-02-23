@@ -11,6 +11,10 @@ spec:
       - type: CIDR
         value: 0.0.0.0/0
   kubernetes:
+    deployment:
+      pod:
+        nodeSelector:
+          kubernetes.io/hostname: thinkcentre
     service:
       annotations:
         svccontroller.k3s.cattle.io/lbpool: infra
