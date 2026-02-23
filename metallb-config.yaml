@@ -26,7 +26,7 @@ spec:
   - infra-pool
   nodeSelectors:
   - matchLabels:
-    kubernetes.io/hostname: thinkcentre
+      kubernetes.io/hostname: thinkcentre
 ---
 apiVersion: metallb.io/v1beta1
 kind: L2Advertisement
@@ -38,4 +38,4 @@ spec:
   - service-pool
   nodeSelectors:
   - matchLabels:
-    kubernetes.io/hostname: hansol-a5    
+      kubernetes.io/hostname: hansol-a5
