@@ -10,6 +10,3 @@ spec:
       pod:
         nodeSelector:
           kubernetes.io/hostname: hansol-a5
-    service:
-      annotations:
-        svccontroller.k3s.cattle.io/lbpool: service

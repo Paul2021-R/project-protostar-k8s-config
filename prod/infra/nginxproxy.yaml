@@ -15,6 +15,3 @@ spec:
       pod:
         nodeSelector:
           kubernetes.io/hostname: thinkcentre
-    service:
-      annotations:
-        svccontroller.k3s.cattle.io/lbpool: infra
