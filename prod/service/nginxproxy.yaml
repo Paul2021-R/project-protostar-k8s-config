@@ -1,3 +1,4 @@
+# prod/service/nginxproxy.yaml
 apiVersion: gateway.nginx.org/v1alpha2
 kind: NginxProxy
 metadata:
