@@ -6,7 +6,7 @@ metadata:
   labels:
     app: protostar
     tier: redis
-    env: dev
+    env: prod
 spec:
   serviceName: protostar-redis-headless
   replicas: 1
@@ -19,7 +19,7 @@ spec:
       labels:
         app: protostar
         tier: redis
-        env: dev
+        env: prod
     spec:
       containers:
         - name: redis
@@ -37,7 +37,7 @@ spec:
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: protostar-dev-secret
+                  name: protostar-prod-secret
                   key: REDIS_PASSWORD
           resources:
             limits:
