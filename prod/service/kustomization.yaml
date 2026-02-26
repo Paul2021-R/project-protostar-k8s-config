@@ -8,4 +8,7 @@ resources:
   - nginxproxy.yaml
   - redis-statefulset.yaml
   - redis-headless-service.yaml
+  - postgres-statefulset.yaml
+  - postgres-headless-service.yaml
+  - postgres-init-configmap.yaml
   - secret.yaml
