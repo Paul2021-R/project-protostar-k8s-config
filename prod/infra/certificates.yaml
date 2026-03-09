@@ -50,3 +50,16 @@ spec:
     kind: ClusterIssuer
   dnsNames:
     - argocd.paulryu93.ddns.net
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: grafana-tls
+  namespace: infra-gateway
+spec:
+  secretName: grafana-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - grafana.paulryu93.ddns.net
