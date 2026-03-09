@@ -1,0 +1,11 @@
+loki:
+  commonConfig:
+    replication_factor: 1
+  storage:
+    type: filesystem
+  nodeSelector:
+    kubernetes.io/hostname: thinkcentre
+
+promtail:
+  # nodeSelector 없음 - DaemonSet이라 모든 노드에 자동 배포
+  enabled: true
