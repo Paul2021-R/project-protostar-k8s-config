@@ -77,5 +77,5 @@ spec:
     - "grafana.paulryu93.ddns.net"
   rules:
     - backendRefs:
-        - name: grafana-server
+        - name: kube-prometheus-stack-grafana
           port: 80
