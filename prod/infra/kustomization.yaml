@@ -7,4 +7,5 @@ resources:
   - httproutes.yaml
   - certificates.yaml
   - nginxproxy.yaml
-  - jenkins.yaml
+  - jenkins-statefulset.yaml
+  - jenkins-service.yaml
