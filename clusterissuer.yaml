@@ -13,6 +13,7 @@ spec:
           dnsNames:
             - "minio.paulryu93.ddns.net"
             - "n8n.paulryu93.ddns.net"
+            - "jnekins.paulryu93.ddns.net"
         http01:
           gatewayHTTPRoute:
             parentRefs:
