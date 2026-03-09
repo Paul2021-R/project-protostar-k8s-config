@@ -14,6 +14,7 @@ spec:
             - "minio.paulryu93.ddns.net"
             - "n8n.paulryu93.ddns.net"
             - "jenkins.paulryu93.ddns.net"
+            - "argocd.paulryu93.ddns.net"
         http01:
           gatewayHTTPRoute:
             parentRefs:

@@ -47,7 +47,6 @@ spec:
     - backendRefs:
         - name: jenkins
           port: 8080
-
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute

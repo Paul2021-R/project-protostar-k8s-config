@@ -43,6 +43,18 @@ spec:
         certificateRefs:
           - name: jenkins-tls
             kind: Secret
+    - name: argocd-https
+      port: 443
+      protocol: HTTPS
+      hostname: "argocd.paulryu93.ddns.net"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: argocd-tls
+            kind: Secret
     - name: http
       port: 80
       protocol: HTTP
