@@ -31,6 +31,18 @@ spec:
         certificateRefs:
           - name: n8n-tls
             kind: Secret
+    - name: jenkins-https
+      port: 443
+      protocol: HTTPS
+      hostname: "jenkins.paulryu93.ddns.net"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: jenkins-tls
+            kind: Secret
     - name: http
       port: 80
       protocol: HTTP
