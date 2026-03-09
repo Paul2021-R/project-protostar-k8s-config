@@ -33,12 +33,12 @@ singleBinary:
   nodeSelector:
     kubernetes.io/hostname: thinkcentre
   extraEnv:
-    - name: MINIO_ACCESS_KEY
+    - name: AWS_ACCESS_KEY_ID
       valueFrom:
         secretKeyRef:
           name: loki-minio-secret
           key: access_key
-    - name: MINIO_SECRET_KEY
+    - name: AWS_SECRET_ACCESS_KEY
       valueFrom:
         secretKeyRef:
           name: loki-minio-secret
