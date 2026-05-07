@@ -1,0 +1,38 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: frontend-tls
+  namespace: service-gateway
+spec:
+  secretName: frontend-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - service-protostar.ddns.net
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: nest-tls
+  namespace: service-gateway
+spec:
+  secretName: nest-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - back-protostar.ddns.net
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: fastapi-tls
+  namespace: service-gateway
+spec:
+  secretName: fastapi-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - back-ai-protostar.ddns.net

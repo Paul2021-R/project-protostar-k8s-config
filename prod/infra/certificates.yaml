@@ -1,0 +1,65 @@
+# infra/certificates.yaml
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: minio-tls
+  namespace: infra-gateway
+spec:
+  secretName: minio-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - minio.paulryu93.ddns.net
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: n8n-tls
+  namespace: infra-gateway
+spec:
+  secretName: n8n-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - n8n.paulryu93.ddns.net
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: jenkins-tls
+  namespace: infra-gateway
+spec:
+  secretName: jenkins-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - jenkins.paulryu93.ddns.net
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argocd-tls
+  namespace: infra-gateway
+spec:
+  secretName: argocd-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - argocd.paulryu93.ddns.net
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: grafana-tls
+  namespace: infra-gateway
+spec:
+  secretName: grafana-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - grafana.paulryu93.ddns.net

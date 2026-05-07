@@ -1,0 +1,22 @@
+# /prod/infra/monitoring-values.yaml
+grafana:
+  nodeSelector:
+    kubernetes.io/hostname: thinkcentre
+
+prometheus:
+  prometheusSpec:
+    nodeSelector:
+      kubernetes.io/hostname: thinkcentre
+
+alertmanager:
+  alertmanagerSpec:
+    nodeSelector:
+      kubernetes.io/hostname: thinkcentre
+
+prometheusOperator:
+  nodeSelector:
+    kubernetes.io/hostname: thinkcentre
+
+kube-state-metrics:
+  nodeSelector:
+    kubernetes.io/hostname: thinkcentre

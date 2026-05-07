@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: protostar-redis
+  namespace: service
+  labels:
+    app: protostar
+    tier: redis
+    env: prod
+spec:
+  serviceName: protostar-redis-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: protostar
+      tier: redis
+  template:
+    metadata:
+      labels:
+        app: protostar
+        tier: redis
+        env: prod
+    spec:
+      containers:
+        - name: redis
+          image: redis:alpine
+          command:
+            - redis-server
+            - "--appendonly"
+            - "yes"
+            - "--requirepass"
+            - "$(REDIS_PASSWORD)"
+          ports:
+            - containerPort: 6379
+              name: redis
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: protostar-prod-secret
+                  key: REDIS_PASSWORD
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - -a
+                - "$(REDIS_PASSWORD)"
+                - ping
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - -a
+                - "$(REDIS_PASSWORD)"
+                - ping
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: redis-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi

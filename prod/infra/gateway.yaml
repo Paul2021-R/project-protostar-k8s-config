@@ -1,0 +1,76 @@
+# gateway.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: infra-gateway
+  namespace: infra-gateway
+spec:
+  gatewayClassName: nginx-infra
+  listeners:
+    - name: minio-https
+      port: 443
+      protocol: HTTPS
+      hostname: "minio.paulryu93.ddns.net"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: minio-tls
+            kind: Secret
+    - name: n8n-https
+      port: 443
+      protocol: HTTPS
+      hostname: "n8n.paulryu93.ddns.net"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: n8n-tls
+            kind: Secret
+    - name: jenkins-https
+      port: 443
+      protocol: HTTPS
+      hostname: "jenkins.paulryu93.ddns.net"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: jenkins-tls
+            kind: Secret
+    - name: argocd-https
+      port: 443
+      protocol: HTTPS
+      hostname: "argocd.paulryu93.ddns.net"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: argocd-tls
+            kind: Secret
+    - name: grafana-https
+      port: 443
+      protocol: HTTPS
+      hostname: "grafana.paulryu93.ddns.net"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: grafana-tls
+            kind: Secret
+    - name: http
+      port: 80
+      protocol: HTTP
+      hostname: "*.paulryu93.ddns.net"
+      allowedRoutes:
+        namespaces:
+          from: All

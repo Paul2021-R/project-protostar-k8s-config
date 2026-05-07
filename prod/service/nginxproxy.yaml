@@ -1,0 +1,12 @@
+# prod/service/nginxproxy.yaml
+apiVersion: gateway.nginx.org/v1alpha2
+kind: NginxProxy
+metadata:
+  name: service-ngf-proxy-config
+  namespace: service-gateway
+spec:
+  kubernetes:
+    deployment:
+      pod:
+        nodeSelector:
+          kubernetes.io/hostname: hansol-a5

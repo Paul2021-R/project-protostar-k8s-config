@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: protostar-redis-headless
+  namespace: service
+  labels:
+    app: protostar
+    tier: redis
+spec:
+  clusterIP: None
+  selector:
+    app: protostar
+    tier: redis
+  ports:
+    - port: 6379
+      targetPort: 6379
+      name: redis
