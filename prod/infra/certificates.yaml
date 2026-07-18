@@ -63,3 +63,16 @@ spec:
     kind: ClusterIssuer
   dnsNames:
     - grafana.paulryu93.ddns.net
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sct-tls
+  namespace: infra-gateway
+spec:
+  secretName: sct-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - sct.paulryu93.ddns.net

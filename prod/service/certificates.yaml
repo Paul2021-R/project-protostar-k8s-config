@@ -36,3 +36,16 @@ spec:
     kind: ClusterIssuer
   dnsNames:
     - back-ai-protostar.ddns.net
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: plane-ce-tls
+  namespace: service-gateway
+spec:
+  secretName: plane-ce-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - plane-snacks.ddns.me

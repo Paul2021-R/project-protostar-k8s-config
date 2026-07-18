@@ -67,6 +67,18 @@ spec:
         certificateRefs:
           - name: grafana-tls
             kind: Secret
+    - name: sct-https
+      port: 443
+      protocol: HTTPS
+      hostname: "sct.paulryu93.ddns.net"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: sct-tls
+            kind: Secret
     - name: http
       port: 80
       protocol: HTTP

@@ -42,10 +42,29 @@ spec:
         certificateRefs:
           - name: fastapi-tls
             kind: Secret
+    - name: plane-ce-https
+      port: 443
+      protocol: HTTPS
+      hostname: "plane-snacks.ddns.me"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: plane-ce-tls
+            kind: Secret
     - name: http
       port: 80
       protocol: HTTP
       hostname: "*.ddns.net"
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: http-snack
+      port: 80 
+      protocol: HTTP
+      hostname: "*.ddns.me"
       allowedRoutes:
         namespaces:
           from: All

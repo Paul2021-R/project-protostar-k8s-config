@@ -31,3 +31,11 @@ spec:
             parentRefs:
             - name: service-gateway
               namespace: service-gateway
+      - selector:
+          dnsNames:
+            - "plane-snacks.ddns.me"
+        http01:
+          gatewayHTTPRoute:
+            parentRefs:
+              - name: service-gateway
+                namespace: service-gateway

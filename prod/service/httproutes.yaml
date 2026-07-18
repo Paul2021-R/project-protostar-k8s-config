@@ -45,3 +45,107 @@ spec:
     - backendRefs:
         - name: protostar-fastapi-service
           port: 8000
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: plane-ce-route
+  namespace: plane-ce-snacks
+spec:
+  parentRefs:
+    - name: service-gateway
+      namespace: service-gateway
+  hostnames:
+    - "plane-snacks.ddns.me"
+  rules:
+    - matches:
+        - path: { type: PathPrefix, value: /api }
+      filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            set:
+              - name: X-Forwarded-Proto
+                value: https
+              - name: X-Forwarded-Host
+                value: plane-snacks.ddns.me
+      backendRefs:
+        - name: plane-ce-snacks-api
+          port: 8000
+    - matches:
+        - path: { type: PathPrefix, value: /auth }
+      filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            set:
+              - name: X-Forwarded-Proto
+                value: https
+              - name: X-Forwarded-Host
+                value: plane-snacks.ddns.me
+      backendRefs:
+        - name: plane-ce-snacks-api
+          port: 8000
+    - matches:
+        - path: { type: PathPrefix, value: /spaces }
+      filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            set:
+              - name: X-Forwarded-Proto
+                value: https
+              - name: X-Forwarded-Host
+                value: plane-snacks.ddns.me
+      backendRefs:
+        - name: plane-ce-snacks-space
+          port: 3000
+    - matches:
+        - path: { type: PathPrefix, value: /god-mode }
+      filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            set:
+              - name: X-Forwarded-Proto
+                value: https
+              - name: X-Forwarded-Host
+                value: plane-snacks.ddns.me
+      backendRefs:
+        - name: plane-ce-snacks-admin
+          port: 3000
+    - matches:
+        - path: { type: PathPrefix, value: /live }
+      filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            set:
+              - name: X-Forwarded-Proto
+                value: https
+              - name: X-Forwarded-Host
+                value: plane-snacks.ddns.me
+      backendRefs:
+        - name: plane-ce-snacks-live
+          port: 3000
+    - matches:
+        - path: { type: PathPrefix, value: /uploads }
+      filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            set:
+              - name: X-Forwarded-Proto
+                value: https
+              - name: X-Forwarded-Host
+                value: plane-snacks.ddns.me
+      backendRefs:
+        - name: plane-ce-snacks-minio
+          port: 9000
+    - matches:
+        - path: { type: PathPrefix, value: / }
+      filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            set:
+              - name: X-Forwarded-Proto
+                value: https
+              - name: X-Forwarded-Host
+                value: plane-snacks.ddns.me
+      backendRefs:
+        - name: plane-ce-snacks-web
+          port: 3000
