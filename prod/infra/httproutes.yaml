@@ -13,7 +13,7 @@ spec:
   rules:
     - backendRefs:
         - name: minio
-          port: 9001
+          port: 9000
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute

@@ -5,6 +5,7 @@ resources:
   - external-services.yaml
   - gateway.yaml
   - httproutes.yaml
+  - sct-client-body-size.yaml
   - certificates.yaml
   - nginxproxy.yaml
   - jenkins-statefulset.yaml
