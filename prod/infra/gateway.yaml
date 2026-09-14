@@ -19,6 +19,18 @@ spec:
         certificateRefs:
           - name: minio-tls
             kind: Secret
+    - name: minio-console-https
+      port: 443
+      protocol: HTTPS
+      hostname: "minio-console.payulryu93.ddns.net"
+      allowedRoutes:
+        namespaces:
+            from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: minio-console-tls
+            kind: Secret
     - name: n8n-https
       port: 443
       protocol: HTTPS
@@ -78,6 +90,18 @@ spec:
         mode: Terminate
         certificateRefs:
           - name: sct-tls
+            kind: Secret
+    - name: couchdb-https
+      port: 443
+      protocol: HTTPS
+      hostname: "couchdb.paulryu93.ddns.net"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: couchdb-tls
             kind: Secret
     - name: http
       port: 80

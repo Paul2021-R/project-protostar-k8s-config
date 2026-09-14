@@ -12,6 +12,8 @@ spec:
       - selector:
           dnsNames:
             - "minio.paulryu93.ddns.net"
+            - "minio-console.paulryu93.ddns.net"
+            - "couchdb.paulryu93.ddns.net"
             - "n8n.paulryu93.ddns.net"
             - "jenkins.paulryu93.ddns.net"
             - "argocd.paulryu93.ddns.net"

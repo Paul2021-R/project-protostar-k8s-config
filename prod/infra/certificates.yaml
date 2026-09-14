@@ -1,4 +1,17 @@
 # infra/certificates.yaml
+#apiVersion: cert-manager.io/v1
+#kind: Certificate
+#metadata:
+#  name: sb-tls
+#  namespace: infra-gateway
+#spec:
+#  secretName: sb-tls
+#  issuerRef:
+#    name: letsencrypt-prod
+#    kind: ClusterIssuer
+#  dnsNames:
+#    - sb.paulryu93.ddns.net
+#---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -11,6 +24,19 @@ spec:
     kind: ClusterIssuer
   dnsNames:
     - minio.paulryu93.ddns.net
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: minio-console-tls
+  namespace: infra-gateway
+spec:
+    secretName: minio-console-tls
+    issuerRef:
+      name: letsencrypt-prod
+      kind: ClusterIssuer
+    dnsNames:
+      - minio-console.paulryu93.ddns.net
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -76,3 +102,16 @@ spec:
     kind: ClusterIssuer
   dnsNames:
     - sct.paulryu93.ddns.net
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: couchdb-tls
+  namespace: infra-gateway
+spec:
+  secretName: couchdb-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - couchdb.paulryu93.ddns.net

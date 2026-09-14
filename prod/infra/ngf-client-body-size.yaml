@@ -1,0 +1,13 @@
+# ngf-client-body-size.yaml
+apiVersion: gateway.nginx.org/v1alpha1
+kind: ClientSettingsPolicy
+metadata:
+  name: ngf-body-size
+  namespace: infra-gateway
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: Gateway
+    name: infra-gateway
+  body:
+    maxSize: 512m

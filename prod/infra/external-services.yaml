@@ -1,4 +1,61 @@
 # external-services.yaml
+#apiVersion: discovery.k8s.io/v1
+#kind: EndpointSlice
+#metadata:
+#  name: sb
+#  namespace: infra
+#  labels:
+#    kubernetes.io/service-name: sb
+#addressType: IPv4
+#endpoints:
+#  - addresses:
+#      - 192.168.0.41
+#    conditions:
+#     ready: true
+#ports:
+#  - name: sb
+#    port: 6666
+#
+#---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sb
+  namespace: infra
+spec:
+  ports:
+    - name: sb
+      port: 6666
+      targetPort: 3000
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: couchdb
+  namespace: infra
+  labels:
+    kubernetes.io/service-name: couchdb
+addressType: IPv4
+endpoints:
+  - addresses:
+      - 192.168.0.41
+    conditions:
+      ready: true
+ports:
+  - name: couchdb
+    port: 5984
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: couchdb
+  namespace: infra
+spec:
+  ports:
+    - name: couchdb
+      port: 5984
+      targetPort: 5984
+---
 apiVersion: discovery.k8s.io/v1
 kind: EndpointSlice
 metadata:
@@ -10,6 +67,8 @@ addressType: IPv4
 endpoints:
   - addresses:
       - 192.168.0.41
+    conditions:
+      ready: true
 ports:
   - name: api
     port: 9000
@@ -41,6 +100,8 @@ addressType: IPv4
 endpoints:
   - addresses:
       - 192.168.0.41
+    conditions:
+      ready: true
 ports:
   - name: web
     port: 5678
