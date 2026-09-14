@@ -144,3 +144,32 @@ spec:
     - name: web
       port: 8501
       targetPort: 8501
+---
+# backup-snacks: thinkcentre 의 Docker 로 도는 백업 중계 서버 (Snacks_Backup_Tool)
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: backup-snacks
+  namespace: infra
+  labels:
+    kubernetes.io/service-name: backup-snacks
+addressType: IPv4
+endpoints:
+  - addresses:
+      - 192.168.0.41
+    conditions:
+      ready: true
+ports:
+  - name: http
+    port: 18080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backup-snacks
+  namespace: infra
+spec:
+  ports:
+    - name: http
+      port: 18080
+      targetPort: 18080

@@ -103,6 +103,18 @@ spec:
         certificateRefs:
           - name: couchdb-tls
             kind: Secret
+    - name: backup-snacks-https
+      port: 443
+      protocol: HTTPS
+      hostname: "backup-snacks.paulryu93.ddns.net"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: backup-snacks-tls
+            kind: Secret
     - name: http
       port: 80
       protocol: HTTP

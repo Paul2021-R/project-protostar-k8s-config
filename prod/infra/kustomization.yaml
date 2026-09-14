@@ -6,6 +6,7 @@ resources:
   - gateway.yaml
   - httproutes.yaml
   - ngf-client-body-size.yaml
+  - backup-snacks-policy.yaml
   - certificates.yaml
   - nginxproxy.yaml
   - jenkins-statefulset.yaml

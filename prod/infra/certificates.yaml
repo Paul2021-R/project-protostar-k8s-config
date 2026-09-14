@@ -115,3 +115,16 @@ spec:
     kind: ClusterIssuer
   dnsNames:
     - couchdb.paulryu93.ddns.net
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: backup-snacks-tls
+  namespace: infra-gateway
+spec:
+  secretName: backup-snacks-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - backup-snacks.paulryu93.ddns.net

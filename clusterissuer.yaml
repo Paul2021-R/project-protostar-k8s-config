@@ -19,6 +19,7 @@ spec:
             - "argocd.paulryu93.ddns.net"
             - "grafana.paulryu93.ddns.net"
             - "sct.paulryu93.ddns.net"
+            - "backup-snacks.paulryu93.ddns.net"
         http01:
           gatewayHTTPRoute:
             parentRefs:

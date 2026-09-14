@@ -1,0 +1,14 @@
+# infra-ngf helm values. 적용은 수동이다 (loki-values.yaml 과 같은 방식).
+#   helm upgrade infra-ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric --version 2.4.2 \
+#     -n infra-gateway -f prod/infra/ngf-infra-values.yaml
+# 2026-09-14 `helm get values infra-ngf` 실측값 + snippetsFilters 한 줄.
+# snippetsFilters 는 CLI 플래그(--snippets-filters)라 NginxProxy 로는 못 켠다.
+nginx:
+  nodeSelector:
+    kubernetes.io/hostname: thinkcentre
+nginxGateway:
+  gatewayClassName: nginx-infra
+  nodeSelector:
+    kubernetes.io/hostname: thinkcentre
+  snippetsFilters:
+    enable: true

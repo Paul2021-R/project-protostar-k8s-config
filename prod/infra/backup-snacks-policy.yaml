@@ -1,0 +1,33 @@
+# backup-snacks-policy.yaml
+# 백업 중계 route 전용. Gateway 전역 ngf-body-size(512m) 를 이 route 에서만 덮는다.
+apiVersion: gateway.nginx.org/v1alpha1
+kind: ClientSettingsPolicy
+metadata:
+  name: backup-snacks-client-settings
+  namespace: infra
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: backup-snacks-route
+  body:
+    # 0 = 게이트웨이는 크기를 보지 않는다. 상한은 서버(MAX_UPLOAD_SIZE)가 하나로 진다 —
+    # 여기서도 자르면 413 이 nginx 본문으로 나가 발신자가 사유를 못 읽는다.
+    maxSize: "0"
+    # 연속 읽기 사이 허용 간격. 느린 회선에서 조각 사이가 길어질 수 있어 기본 60s 보다 넉넉히.
+    timeout: 300s
+---
+# 🚨 컨트롤러에 --snippets-filters 가 켜져 있어야 한다 (ngf-infra-values.yaml).
+# 꺼진 채로는 route 가 이 필터를 못 풀어 route 자체가 거절된다.
+apiVersion: gateway.nginx.org/v1alpha1
+kind: SnippetsFilter
+metadata:
+  name: backup-snacks-no-request-buffering
+  namespace: infra
+spec:
+  snippets:
+    - context: http.server.location
+      # nginx 기본은 body 를 임시파일에 다 받은 뒤 넘긴다. 그러면 덤프 크기만큼
+      # 게이트웨이 파드 디스크를 쓰고, 「홈랩 디스크에 안 남긴다」가 여기서 깨진다.
+      value: |
+        proxy_request_buffering off;
