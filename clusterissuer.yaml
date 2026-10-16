@@ -20,6 +20,7 @@ spec:
             - "grafana.paulryu93.ddns.net"
             - "sct.paulryu93.ddns.net"
             - "backup-snacks.paulryu93.ddns.net"
+            - "phronesis.paulryu93.ddns.net"
         http01:
           gatewayHTTPRoute:
             parentRefs:

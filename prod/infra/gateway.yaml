@@ -115,6 +115,18 @@ spec:
         certificateRefs:
           - name: backup-snacks-tls
             kind: Secret
+    - name: phronesis-https
+      port: 443
+      protocol: HTTPS
+      hostname: "phronesis.paulryu93.ddns.net"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: phronesis-tls
+            kind: Secret
     - name: http
       port: 80
       protocol: HTTP

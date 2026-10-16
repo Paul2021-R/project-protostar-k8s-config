@@ -166,3 +166,30 @@ spec:
       backendRefs:
         - name: backup-snacks
           port: 18080
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: phronesis-route
+  namespace: infra
+spec:
+  parentRefs:
+    # 🚨 HTTPS 리스너에만 붙인다. sectionName 이 없으면 와일드카드 HTTP(80) 리스너에도 붙어
+    #    로그인 비밀번호 · 세션 쿠키가 평문으로 오간다(80 은 GCP 중계를 거쳐 인터넷을 두 번 건넌다).
+    - name: infra-gateway
+      namespace: infra-gateway
+      sectionName: phronesis-https
+  hostnames:
+    - "phronesis.paulryu93.ddns.net"
+  rules:
+    - filters:
+        # HTTPS 로 한 번 들어온 브라우저가 그 뒤 http:// 를 스스로 https:// 로 바꾸게 한다.
+        # 세션 쿠키에 Secure 속성이 없어, http:// 로 치면 쿠키가 평문으로 실려 나가는 것을 막는다.
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            add:
+              - name: Strict-Transport-Security
+                value: "max-age=31536000"
+      backendRefs:
+        - name: phronesis
+          port: 8090

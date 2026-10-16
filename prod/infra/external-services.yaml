@@ -173,3 +173,33 @@ spec:
     - name: http
       port: 18080
       targetPort: 18080
+---
+# phronesis: thinkcentre 의 Docker 로 도는 할일 관리 앱 (phronesis-personal_task_management_tool)
+# 앱은 compose 에서 192.168.0.41:8090 에 묶는다. 0.0.0.0 이면 tailnet · Docker 쪽 주소에서도 평문으로 닿는다.
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: phronesis
+  namespace: infra
+  labels:
+    kubernetes.io/service-name: phronesis
+addressType: IPv4
+endpoints:
+  - addresses:
+      - 192.168.0.41
+    conditions:
+      ready: true
+ports:
+  - name: http
+    port: 8090
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: phronesis
+  namespace: infra
+spec:
+  ports:
+    - name: http
+      port: 8090
+      targetPort: 8090
